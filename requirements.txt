@@ -1,5 +1,4 @@
 weaviate-client
-python
 loguru
 numpy
 python-dotenv
