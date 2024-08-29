@@ -26,19 +26,19 @@ SPHERE_DATASET = "sphere.100k.jsonl"  # update to match your filename
 
 
 def get_client(URL, APIKEY):
-    client = weaviate.connect_to_weaviate_cloud(
-        cluster_url=URL,
-        auth_credentials=weaviate.auth.AuthApiKey(APIKEY),
-        additional_config=wc.init.AdditionalConfig(
-            timeout=wc.init.Timeout(init=10)
-        ),  # Values in seconds
-        #
-    )
+    client = weaviate.connect_to_local()
+    # client = weaviate.connect_to_weaviate_cloud(
+    #     cluster_url=URL,
+    #     auth_credentials=weaviate.auth.AuthApiKey(APIKEY),
+    #     additional_config=wc.init.AdditionalConfig(
+    #         timeout=wc.init.Timeout(init=10)
+    #     ),  # Values in seconds
+    #     #
+    # )
     return client
 
 
-# client = weaviate.connect_to_local()
-
+    
 
 def createCollection(client):
     try:
@@ -133,10 +133,10 @@ def ingest_data(collection, num_objects, name_of_tenant):
                 uuid=obj["id"],
             )
         counter += 1
-        if client.batch.failed_objects:
-            for failed_object in client.batch.failed_objects:
+        if collection.batch.failed_objects:
+            for failed_object in collection.batch.failed_objects:
                 print(
-                    f"Failed to add object with UUID {failed_object.original_uuid}: {failed_object.message}"
+                    f"Failed to add object with UUID {failed_object.uuid} in tenant {name_of_tenant}: {failed_object.message}"
                 )
         print(
             f"Imported {num_objects} objects in {time.time() - start} in tenant {name_of_tenant}"
