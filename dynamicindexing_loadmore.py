@@ -33,20 +33,21 @@ def get_client(URL, APIKEY):
         additional_config=wc.init.AdditionalConfig(
             timeout=wc.init.Timeout(init=10)
         ),  # Values in seconds
-        #
     )
     return client
 
 
-def read_jsonl_file(num_objects):
+def read_jsonl_file(num_objects,start_object):
     objects = []
     with open(SPHERE_DATASET, 'r') as jsonl_file:
-        for i , line in enumerate(jsonl_file, start=10000):
-            if i >= 10000 + num_objects:
-                break
-            json_object = json.loads(line.strip())
-            objects.append(json_object)
-    return objects
+        for _ in range(start_object - 1):
+            next(jsonl_file)
+        for _ in range(num_objects):
+            line = jsonl_file.readline().strip()
+            if line :
+                json_object = json.loads(line)
+                objects.append(json_object)
+    return objects            
 
 
 # Import the data, Weaviate will use the auto-schema function to
@@ -54,8 +55,8 @@ def read_jsonl_file(num_objects):
 def ingest_data(collection, num_objects, name_of_tenant):
     counter = 0
     start = time.time()
-    data_objects = read_jsonl_file(num_objects)
-    print(data_objects)
+    data_objects = read_jsonl_file(num_objects,10001)
+    # print(data_objects)
     cl_collection = collection.with_consistency_level(wvc.ConsistencyLevel.QUORUM)
     with cl_collection.batch.dynamic() as batch:
         for obj in data_objects:
@@ -85,10 +86,12 @@ def add_objects_to_tenants():
     collection = client.collections.get("Testingdynamicindexings")
     tenants = [key for key in collection.tenants.get().keys()]
     for tenant in tenants:
+        # print("Tenant is: ",tenant)
         ingest_data(collection.with_tenant(tenant), 5, tenant)
 
 
 if __name__ == "__main__":
-    client = get_client(WCD_URL, WCD_API_KEY)
+    client = weaviate.connect_to_local()
+    # client = get_client(WCD_URL, WCD_API_KEY)
     logger.info("Adding objects to tenants")
     add_objects_to_tenants()
