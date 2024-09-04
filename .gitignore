@@ -2,3 +2,6 @@
 sphere.100k.jsonl
 .venv
 test.txt
+*.log
+hnsw_load.py
+hnswlatency.py
