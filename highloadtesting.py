@@ -18,8 +18,8 @@ WEAVIATE_API_KEY = os.getenv("WCD_API_KEY")
 # Constants
 SPHERE_DATASET = "sphere.100M.jsonl.tar.gz"
 MAX_IMPORT = 1_000_000
-WEAVIATE_URL = "https://mbh8plpcqvygqxbeca9xuw.c0.europe-west3.gcp.weaviate.cloud"
-WEAVIATE_API_KEY = "Jr6kc4bJTD08OvRA9lBKrUOB98SCdocSF7si"
+WEAVIATE_URL = ""
+WEAVIATE_API_KEY = ""
 COLLECTION_NAME = "pages"
 
 
